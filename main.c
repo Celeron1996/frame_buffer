@@ -94,7 +94,19 @@ static void printf_screen_info(struct fb_var_screeninfo * p_var, struct fb_fix_s
 					"sync = %d\n"\
 					"vmode = %d\n"\
 					"rotate = %d\n"\
-					"colorspace = %d\n"
+					"colorspace = %d\n"\
+					"red.offset = %d\n"\
+					"red.length = %d\n"\
+					"red.msb_right = %d\n"\
+					"green.offset = %d\n"\
+					"green.length = %d\n"\
+					"green.msb_right = %d\n"\
+					"blue.offset = %d\n"\
+					"blue.length = %d\n"\
+					"blue.msb_right = %d\n"\
+					"transp.offset = %d\n"\
+					"transp.length = %d\n"\
+					"transp.msb_right = %d\n"
 					,
 					p_var->xres,
 					p_var->yres,
@@ -119,7 +131,19 @@ static void printf_screen_info(struct fb_var_screeninfo * p_var, struct fb_fix_s
 					p_var->sync,
 					p_var->vmode,
 					p_var->rotate,
-					p_var->colorspace
+					p_var->colorspace,
+					p_var->red.offset,
+					p_var->red.length,
+					p_var->red.msb_right,
+					p_var->green.offset,
+					p_var->green.length,
+					p_var->green.msb_right,
+					p_var->blue.offset,
+					p_var->blue.length,
+					p_var->blue.msb_right,
+					p_var->transp.offset,
+					p_var->transp.length,
+					p_var->transp.msb_right
 					);
 	printf("-----------------------------end----------------------------\n");
 	
