@@ -16,6 +16,7 @@ int main(int argc, char **argv)
 	unsigned char *fb_base;
 	struct fb_var_screeninfo var;
 	struct fb_fix_screeninfo fix;
+	int screen_size;	
 
 	if (argc != 2)
 	{
@@ -45,6 +46,21 @@ int main(int argc, char **argv)
 	}	
 
 	printf_screen_info(&var, &fix);
+
+	screen_size = var.xres * var.yres * var.bits_per_pixel / 8;
+
+	fb_base = (unsigned char *)mmap(NULL , screen_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd_fb, 0);
+	if (fb_base == (unsigned char *)-1)
+	{
+		printf("can't mmap\n");
+		return -1;
+	}
+
+	/* clean and set to white */
+	memset(fb_base, 0xff, screen_size);
+	
+
+	munmap(fb_base, screen_size);	
 					
 	close(fd_fb);
 	
