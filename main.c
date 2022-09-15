@@ -7,8 +7,11 @@
 #include <linux/fb.h>
 #include <sys/mman.h>
 #include <string.h>
+#include <stdint.h>
 
 static void printf_screen_info(struct fb_var_screeninfo * p_var, struct fb_fix_screeninfo * p_fix);
+static void lcd_put_pixel(int x, int y, unsigned int color, unsigned char *fb_base, struct fb_var_screeninfo * p_var);
+
 
 int main(int argc, char **argv)
 {
@@ -16,12 +19,13 @@ int main(int argc, char **argv)
 	unsigned char *fb_base;
 	struct fb_var_screeninfo var;
 	struct fb_fix_screeninfo fix;
-	int screen_size;	
+	int screen_size;
+	
 
-	if (argc != 2)
+	if (argc < 2)
 	{
 		printf("arg error!\n");
-		printf("example:%s /dev/fb0\n", argv[0]);
+		printf("example:%s /dev/fb0 0xff0000\n", argv[0]);
 		return -1;
 	}
 
@@ -56,10 +60,20 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	/* clean and set to white */
-	memset(fb_base, 0xff, screen_size);
+	/* clean and set to color */
+	if (argc >= 3)
+	{
+		int color;
+		sscanf(argv[2], "%x", &color);
+		for (int y = 0; y < var.yres; y++)
+		{
+			for(int x = 0; x < var.xres; x++)
+			{
+				lcd_put_pixel( x,  y,  color, fb_base, &var);
+			}
+		}
+	}
 	
-
 	munmap(fb_base, screen_size);	
 					
 	close(fd_fb);
@@ -185,5 +199,31 @@ static void printf_screen_info(struct fb_var_screeninfo * p_var, struct fb_fix_s
 	printf("-----------------------------end----------------------------\n");
 	
 }
+
+
+static void lcd_put_pixel(int x, int y, unsigned int color, unsigned char *fb_base, struct fb_var_screeninfo * p_var)
+{
+	uint8_t * pen_8 = fb_base + (y * p_var->xres + x)*(p_var->bits_per_pixel/8) ;
+	uint16_t *pen_16;
+	uint32_t *pen_32;
+
+	pen_16 = (uint16_t *)pen_8;
+	pen_32 = (uint32_t *)pen_8;
+	
+	switch (p_var->bits_per_pixel)
+	{
+		case 16:	//565
+		{
+			printf("can't support %d dpp\n", p_var->bits_per_pixel);
+			break;
+		}
+		case 32:
+		{
+			*pen_32 = color;
+			break;
+		}
+	}
+}
+
 
 
